@@ -1,42 +1,52 @@
+require("dotenv").config();
 const express = require("express");
 const monk = require("monk");
 const cors = require("cors");
+const { response } = require("express");
+const nf = require("node-fetch");
+const ObjectId = require("mongodb").ObjectID;
+const PORT = process.env.PORT;
 
 const app = express();
 app.use(cors());
 
-const MongoClient = require('mongodb').MongoClient;
-const uri = "mongodb+srv://ezra_test:QYruuDt8cxR36XM8@cluster0-sa1ei.gcp.mongodb.net/<dbname>?retryWrites=true&w=majority";
-const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
-client.connect(err => {
-  const collection = client.db("movie_information").collection("word_statistics");
-  console.log(collection.find().toArray());
+//set up mongo client
+const MongoClient = require("mongodb").MongoClient;
 
-    app.get("/test", (req, res) => {
-    // search the database (collection) for all users with the `user` field being the `user` route paramter
-    collection.find({ _id: "5ef8a503c265e955a4add08e" }).toArray((err, array) => {
-        if (err) {
-        // if an error happens
-        res.send("Error in GET req.");
-        } else {
+//get access to cluster with user name and password
+const uri = process.env.MONGO_URI;
 
-        console.log(array);
-        res.send(test_response); // send back all users found with the matching username
-        }
-    });
-    });
-    
-//   client.close();
+//params for the mongoclient
+const client = new MongoClient(uri, {
+	useNewUrlParser: true,
+	useUnifiedTopology: true,
 });
 
+client.connect((err) => {
+	//query into the collection
+	const collection = client
+		.db("movie_information")
+		.collection("word_statistics");
+	//get request for any word
+	app.get("/:word", (req, res) => {
+		const word = req.params.word;
+		const getData = async () => {
+			// search the database (collection) for all entries with the 'word' route paramter
+			const data = collection.find({ [word]: { $exists: true } }).toArray();
+			return data;
+		};
+		//Send data back to the client once recieved
+		getData().then((data) => res.send(data));
+	}),
+		app.get("/", (req, res) => {
+			res.json({
+				myMessage: "sample response at root",
+			});
+		});
 
-// app.get("/", (req, res) => {
-//     res.json({
-//         myMessage: "sample response"
-//     });
-// }),
+	//   client.close();
+});
 
-
-app.listen(5000, () => {
-    console.log("listening on 5000");
+app.listen(PORT, () => {
+	console.log(`listening on ${PORT}`);
 });
