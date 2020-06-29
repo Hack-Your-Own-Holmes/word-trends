@@ -18,25 +18,19 @@ const uri = "mongodb+srv://ezra_test:QYruuDt8cxR36XM8@cluster0-sa1ei.gcp.mongodb
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
 client.connect(err => {
-
   //query into the collection
   const collection = client.db("movie_information").collection("word_statistics");
-
     //get request for any word
     app.get("/:word", (req, res) => {
         
         const word = req.params.word;
-
         const getData = async() =>{
-
             // search the database (collection) for all entries with the 'word' route paramter
             const data = collection.find({ [word]: {$exists: true}}).toArray();
             return data;
         }
-
         //Send data back to the client once recieved
         getData().then(data => res.send(data)); 
-        
     }),
 
     app.get("/", (req, res) => {
