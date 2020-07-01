@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import LineChart from "./components/LineChart";
 import SearchBar from "./components/SearchBar";
 import fetchWord from "./helpers/fetchWord";
-import "./App.css";
+import "./index.css";
 
 function App() {
   const [currentWord, setCurrentWord] = useState("");
