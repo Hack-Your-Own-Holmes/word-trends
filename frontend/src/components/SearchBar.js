@@ -1,23 +1,34 @@
-import React from "react";
-import "../SearchBar.css";
+import React, { useState } from "react";
 
-export default class SearchBar extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-  render() {
-    return (
-      <div>
-        <main>
-          <div className="search-box">
-            <input
-              type="text"
-              className="search-bar"
-              placeholder="search ..."
-            />
-          </div>
-        </main>
-      </div>
-    );
-  }
-}
+const SearchBar = ({ setCurrentWord }) => {
+  const [text, setText] = useState("");
+
+  const handleChange = ({ target }) => {
+    setText(target.value);
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    setCurrentWord(text);
+  };
+
+  return (
+    <div>
+      <form onSubmit={handleSubmit}>
+        <input
+          value={text}
+          type="search"
+          name="word-search"
+          id="word-search"
+          placeholder="search..."
+          onChange={handleChange}
+        />
+        <button className="button" type="submit">
+          Search
+        </button>
+      </form>
+    </div>
+  );
+};
+
+export default SearchBar;
